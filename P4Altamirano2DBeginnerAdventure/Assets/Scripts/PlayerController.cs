@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
     {
         MoveAction.Enable();
         rigidbody2d = GetComponent<Rigidbody2D>();
-        currentHealth = maxHealth;
+        //currentHealth = maxHealth;
     }
 
 
@@ -56,17 +56,18 @@ public class PlayerController : MonoBehaviour
         position.x = position.x + 0.01f * horizontal;
         position.y = position.y + 0.01f * vertical;
         transform.position = position;
-
-        void FixedUpdate()
-        {
-            Vector2 position = (Vector2)rigidbody2d.position + move * 3.0f * Time.deltaTime;
-            rigidbody2d.MovePosition(position);
-        }
-
-        void ChangeHealth (int amount)
-        {
-            currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
-            Debug.Log(currentHealth + "/" + maxHealth);
-        }
     }
+    //FixedUpdate has the same call rate as the physics system
+    void FixedUpdate()
+    {
+        Vector2 position = (Vector2)rigidbody2d.position + move * 3.0f * Time.deltaTime;
+        rigidbody2d.MovePosition(position);
+    }
+
+    public void ChangeHealth(int amount)
+    {
+        currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
+        Debug.Log(currentHealth + "/" + maxHealth);
+    }
+
 }
