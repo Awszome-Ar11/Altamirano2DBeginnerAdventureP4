@@ -13,14 +13,22 @@ public class PlayerController : MonoBehaviour
 
     //Variables elated to the health system
     public int maxHealth = 5;
-    int currentHealth;
+    public int health { get { return currentHealth; }}
+    int currentHealth = 1;
+
+    //Variables related to temporary invincibility
+    public float timeInvincible = 2.0f;
+        bool isInvincible;
+        float damageCooldown;
+
 
     // Start is called before the first frame update
     void Start()
     {
         MoveAction.Enable();
         rigidbody2d = GetComponent<Rigidbody2D>();
-        //currentHealth = maxHealth;
+        
+        currentHealth = maxHealth;
     }
 
 
@@ -29,6 +37,15 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         move = MoveAction.ReadValue<Vector2>();
+
+        if (isInvincible)
+        {
+            damageCooldown -= Time.deltaTime;
+            if (damageCooldown < 0)
+            {
+                isInvincible = false; 
+            }
+        }
         Debug.Log(move);
         float horizontal = 0.0f;
         if (Keyboard.current.leftArrowKey.isPressed)
@@ -64,8 +81,18 @@ public class PlayerController : MonoBehaviour
         rigidbody2d.MovePosition(position);
     }
 
+
     public void ChangeHealth(int amount)
     {
+        if (amount < 0)
+        {
+            if (isInvincible)
+            {
+                return;
+            }
+            isInvincible = true;
+            damageCooldown = timeInvincible;
+        }
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
         Debug.Log(currentHealth + "/" + maxHealth);
     }
