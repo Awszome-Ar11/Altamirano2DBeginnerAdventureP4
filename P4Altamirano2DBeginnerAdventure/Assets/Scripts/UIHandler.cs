@@ -9,7 +9,7 @@ public class UIHandler : MonoBehaviour
     public static UIHandler instance { get; private set; }
 
     // Awake is called when the script instance is being loaded (in this situation, when the game scene loads)
-    private void Awake ()
+    private void Awake()
     {
         instance = this;
     }

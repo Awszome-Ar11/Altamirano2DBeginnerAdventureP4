@@ -6,20 +6,21 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
     //Variables related to player character movement
+    public InputAction LeftAction;
     public InputAction MoveAction;
     Rigidbody2D rigidbody2d;
     Vector2 move;
     public float speed = 3.0f;
 
-    //Variables elated to the health system
+    //Variables related to the health system
     public int maxHealth = 5;
-    public int health { get { return currentHealth; }}
-    int currentHealth = 1;
+    int currentHealth = 5;
+    public int health { get { return currentHealth; } }
 
     //Variables related to temporary invincibility
     public float timeInvincible = 2.0f;
-        bool isInvincible;
-        float damageCooldown;
+    bool isInvincible;
+    float damageCooldown;
 
 
     // Start is called before the first frame update
@@ -27,7 +28,7 @@ public class PlayerController : MonoBehaviour
     {
         MoveAction.Enable();
         rigidbody2d = GetComponent<Rigidbody2D>();
-        
+
         currentHealth = maxHealth;
     }
 
@@ -36,42 +37,16 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        move = MoveAction.ReadValue<Vector2>();
 
         if (isInvincible)
         {
             damageCooldown -= Time.deltaTime;
             if (damageCooldown < 0)
-            {
-                isInvincible = false; 
-            }
+                isInvincible = false;
         }
+        Vector2 move = MoveAction.ReadValue<Vector2>();
         Debug.Log(move);
-        float horizontal = 0.0f;
-        if (Keyboard.current.leftArrowKey.isPressed)
-        {
-            horizontal = -1.0f;
-        }
-        else if (Keyboard.current.rightArrowKey.isPressed)
-        {
-            horizontal = 1.0f;
-        }
-        Debug.Log(horizontal);
-
-        float vertical = 0.0f;
-        if (Keyboard.current.upArrowKey.isPressed)
-        {
-            vertical = 1.0f;
-        }
-        else if (Keyboard.current.downArrowKey.isPressed)
-        {
-            vertical = -1.0f;
-        }
-        Debug.Log(vertical);
-
-        Vector2 position = transform.position;
-        position.x = position.x + 0.01f * horizontal;
-        position.y = position.y + 0.01f * vertical;
+        Vector2 position = (Vector2)transform.position + move * 0.1f;
         transform.position = position;
     }
     //FixedUpdate has the same call rate as the physics system
@@ -87,14 +62,13 @@ public class PlayerController : MonoBehaviour
         if (amount < 0)
         {
             if (isInvincible)
-            {
-                return;
-            }
+             return;
+            
             isInvincible = true;
             damageCooldown = timeInvincible;
         }
         currentHealth = Mathf.Clamp(currentHealth + amount, 0, maxHealth);
-        Debug.Log(currentHealth + "/" + maxHealth);
+        UIHandler.instance.SetHealthValue(currentHealth / (float)maxHealth);
     }
 
 }
